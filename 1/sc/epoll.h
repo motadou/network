@@ -1,8 +1,6 @@
-#ifndef _EPOLL_H__
-#define _EPOLL_H__
+#ifndef __TESTNETWORK_EPOLL_H__
+#define __TESTNETWORK_EPOLL_H__
 
-#include <string>
-#include <pthread.h>
 #include <unistd.h>
 #include <sys/epoll.h>
 
@@ -33,7 +31,7 @@ public:
     void Initialize(int32_t iMaxEvents)
 	{
 		m_iMaxEvents = iMaxEvents;
-		m_iEpollFd   = ::epoll_create(iMaxEvents);
+		m_iEpollFd   = ::epoll_create(1);
 		m_vEvent     = new epoll_event[iMaxEvents];
 	}
 

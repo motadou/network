@@ -1,32 +1,28 @@
-#ifndef __DATETIME_H__
-#define __DATETIME_H__
+#ifndef __TESTNETWORK_DATETIME_H__
+#define __TESTNETWORK_DATETIME_H__
 
 #include <string>
-#include <fstream>
 #include <iostream>
 #include <time.h>
 #include <stdint.h>
-#include <sys/time.h>
 #include <stdio.h>
-#include <unistd.h>
-#include <string>
-#include <iostream>
-#include <sys/socket.h>
-#include <netinet/tcp.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <netinet/tcp.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 class Util
 {
 public:
-    static std::string CurrentDateTime(const std::string & sFormat = "%Y%m%d%H%M%S") { return Timestamp2Str(time(NULL), sFormat); }
+    static std::string CurrentDateTime(const std::string & sFormat = "%Y-%m-%d %H:%M:%S") { return Timestamp2Str(time(NULL), sFormat); }
 
-    static std::string Timestamp2Str(time_t iTimestamp, const std::string & sFormat = "%Y%m%d%H%M%S")
+    static std::string Timestamp2Str(time_t iTimestamp, const std::string & sFormat = "%Y-%m-%d %H:%M:%S")
 	{
 		struct tm xTime = {0};
 		localtime_r(&iTimestamp, &xTime);
@@ -90,7 +86,21 @@ public:
 
 		return 0;
 	}
-	
+
+	static int Send(int iFd, const std::string & sBuff)
+	{
+		return ::send(iFd, sBuff.data(), sBuff.size(), 0);
+	}
+
+	static int Accept(int iListenFd)
+	{
+		struct sockaddr_in xSockAddr;
+
+		socklen_t iSockAddrSize = sizeof(sockaddr_in);
+
+		return ::accept(iListenFd, (struct sockaddr *)&xSockAddr, &iSockAddrSize);
+	}
+
 	static int SetBlock(int iFd, bool bBlock)	
 	{
 		int iFLValue = 0;
@@ -107,23 +117,6 @@ public:
 
 		return 0;
 	}
-	
-	static int Send(int iFd, const std::string & sBuff)
-	{
-		return ::send(iFd, sBuff.data(), sBuff.size(), 0);
-	}
-
-
-	static int Accept(int iListenFd)
-	{
-		struct sockaddr_in xSockAddr;
-
-		socklen_t iSockAddrSize = sizeof(sockaddr_in);
-
-		return ::accept(iListenFd, (struct sockaddr *)&xSockAddr, &iSockAddrSize);
-	}
-
-	
 };
 
 #endif

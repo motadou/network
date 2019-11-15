@@ -29,7 +29,6 @@ int RecvData(int iFd)
             else
             {
                 std::cout << Util::CurrentDateTime() << " recv error::" << errno << std::endl;
-
                 return -1;
             }
         }
@@ -71,6 +70,82 @@ int SendData(int iFd)
     return -1;
 }
 
+void ProcessListenEvent(Epoll & xEpoll, epoll_event & xEvent)
+{	
+	for (uint32_t iListenFd = xEvent.data.u32; (xEvent.events & EPOLLIN); )
+	{
+		int iFd = Util::Accept(iListenFd);
+
+		if (iFd <= 0)
+        {
+			if (errno == EAGAIN)
+            {
+                break;
+            }
+            else
+            {
+                continue;
+            }
+		}
+
+		Util::SetBlock(iFd, false);
+
+        int flag = 1;
+        if (::setsockopt(iFd, SOL_SOCKET, SO_KEEPALIVE, (char*)&flag, int(sizeof(int))) == -1)
+		{
+			std::cout << "set false" << std::endl;
+
+			return ;
+		}
+
+		int keepIdle     = 60;
+        int keepInterval = 10;
+        int keepCount    = 13;
+
+		std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPIDLE,  (void *)&keepIdle, sizeof(keepIdle)) << std::endl;
+
+		std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval)) << std::endl;
+
+		std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPCNT,   (void *)&keepCount, sizeof(keepCount)) << std::endl;
+
+		std::cout << "set success" << std::endl;
+
+		xEpoll.AddEvent(iFd, Epoll::E_EPOLL_SOCKET, iFd, EPOLLIN | EPOLLOUT);
+
+        std::cout << "new sock:" << iFd << std::endl;
+	}
+}
+
+void ProcessSocketEvent(Epoll & xEpoll, epoll_event & xEvent)
+{
+	if (xEvent.events & (EPOLLERR | EPOLLHUP))
+	{
+		std::cout << "close ::" << (xEvent.events & EPOLLERR?"EPOLLERR":" not ") << "|" << (xEvent.events & EPOLLHUP ? "EPOLLHUP" : " not ") << "|" << errno << std::endl;
+
+		return ;
+	}
+
+	if (xEvent.events & (EPOLLOUT))
+	{
+		//SendData(xEvent.data.u32);
+	}
+
+	if (xEvent.events & (EPOLLIN))
+	{
+		RecvData(xEvent.data.u32);
+
+		static int i = 0;
+
+		::sleep(30);
+
+		if (++i == 1)
+		{
+			std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
+			SendData(xEvent.data.u32);
+		}
+	}
+}
+
 int main(int argc, char ** argv)
 {
 	int iListenFd = Util::CreateTcpSocket();
@@ -94,91 +169,15 @@ int main(int argc, char ** argv)
         {
             epoll_event xEvent = xEpoll.GetEventByIndex(i);
 
-            std::cout << "|||E:" << (xEvent.data.u64 >> 32) << "|" << (xEvent.data.u32) << std::endl;
+            std::cout << "New Event|Type:" << (xEvent.data.u64 >> 32) << "|Fd:" << (xEvent.data.u32) << std::endl;
 
             switch (xEvent.data.u64 >> 32)
             {
-                case Epoll::E_EPOLL_LISTEN:
-                {
-                    for (uint32_t iListenFd = xEvent.data.u32; (xEvent.events & EPOLLIN); )
-                    {
-                        int iFd = Util::Accept(iListenFd);
-
-                        if (iFd <= 0)
-                        {
-                            if (errno == EAGAIN)
-                            {
-                                break;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-
-						Util::SetBlock(iFd, false);
-
-                        int flag = 1;
-                        if (::setsockopt(iFd, SOL_SOCKET, SO_KEEPALIVE, (char*)&flag, int(sizeof(int))) == -1)
-                        {
-                            std::cout << "set false" << std::endl;
-
-                            return 0;
-                        }
-
-                        int keepIdle     = 60;
-                        int keepInterval = 10;
-                        int keepCount    = 13;
-
-                        std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPIDLE,  (void *)&keepIdle, sizeof(keepIdle)) << std::endl;
-
-                        std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPINTVL, (void *)&keepInterval, sizeof(keepInterval)) << std::endl;
-
-                        std::cout << setsockopt(iFd, SOL_TCP, TCP_KEEPCNT,   (void *)&keepCount, sizeof(keepCount)) << std::endl;
-
-                        std::cout << "set success" << std::endl;
-
-                        xEpoll.AddEvent(iFd, Epoll::E_EPOLL_SOCKET, iFd, EPOLLIN | EPOLLOUT);
-
-                        std::cout << "new sock:" << iFd << std::endl;
-                    }
-                    break; 
-                }
-
-            case Epoll::E_EPOLL_SOCKET: 
-                if (xEvent.events & (EPOLLERR | EPOLLHUP))
-                {
-                    std::cout << "close ::" << (xEvent.events & EPOLLERR?"EPOLLERR":" not ") << "|" << (xEvent.events & EPOLLHUP ? "EPOLLHUP" : " not ") << "|" << errno << std::endl;
-
-                    break;
-                }
-
-                if (xEvent.events & (EPOLLOUT))
-                {
-                    //SendData(xEvent.data.u32);
-                }
-
-                if (xEvent.events & (EPOLLIN))
-                {
-                    RecvData(xEvent.data.u32);
-
-                    static int i = 0;
-
-                    ::sleep(30);
-
-                    if (++i == 1)
-                    {
-                        std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXX" << std::endl;
-                        SendData(xEvent.data.u32);
-                    }
-                }
-
-                break;
-            }
+                case Epoll::E_EPOLL_LISTEN : ProcessListenEvent(xEpoll, xEvent); break;
+				case Epoll::E_EPOLL_SOCKET : ProcessSocketEvent(xEpoll, xEvent); break;
+			}
         }
-
     }
-
 
     return 0;
 }
