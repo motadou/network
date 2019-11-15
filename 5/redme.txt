@@ -1,0 +1,65 @@
+mqq@dev-0-0:/home/kevintian$ sudo tcpdump -i eth0 -n port 7788
+[sudo] password for mqq: 
+tcpdump: verbose output suppressed, use -v or -vv for full protocol decode
+listening on eth0, link-type EN10MB (Ethernet), capture size 262144 bytes
+
+16:58:33.171658 IP 192.168.10.103.52081 > 192.168.9.100.7788: Flags [S], seq 3478647996, win 29200, options [mss 1460,sackOK,TS val 4294913218 ecr 0,nop,wscale 7], length 0
+16:58:33.171671 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [S.], seq 455285675, ack 3478647997, win 28960, options [mss 1460,sackOK,TS val 784061257 ecr 4294913218,nop,wscale 7], length 0
+16:58:33.172757 IP 192.168.10.103.52081 > 192.168.9.100.7788: Flags [.], ack 1, win 229, options [nop,nop,TS val 4294913219 ecr 784061257], length 0
+16:58:33.172849 IP 192.168.10.103.52081 > 192.168.9.100.7788: Flags [P.], seq 1:10, ack 1, win 229, options [nop,nop,TS val 4294913219 ecr 784061257], length 9
+16:58:33.172855 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [.], ack 10, win 227, options [nop,nop,TS val 784061257 ecr 4294913219], length 0
+
+
+16:59:03.173080 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784068757 ecr 4294913219], length 11
+16:59:03.369425 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784068807 ecr 4294913219], length 11
+16:59:03.569445 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784068857 ecr 4294913219], length 11
+16:59:03.969445 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784068957 ecr 4294913219], length 11
+16:59:04.769433 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784069157 ecr 4294913219], length 11
+16:59:06.373420 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784069558 ecr 4294913219], length 11
+16:59:09.581471 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784070360 ecr 4294913219], length 11
+16:59:15.997466 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784071964 ecr 4294913219], length 11
+16:59:28.813456 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784075168 ecr 4294913219], length 11
+16:59:54.477436 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784081584 ecr 4294913219], length 11
+17:00:45.741435 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784094400 ecr 4294913219], length 11
+17:02:28.397462 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784120064 ecr 4294913219], length 11
+17:04:28.717478 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784150144 ecr 4294913219], length 11
+17:06:29.037443 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784180224 ecr 4294913219], length 11
+17:08:29.357442 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784210304 ecr 4294913219], length 11
+17:10:29.677456 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784240384 ecr 4294913219], length 11
+17:12:29.997437 IP 192.168.9.100.7788 > 192.168.10.103.52081: Flags [P.], seq 1:12, ack 10, win 227, options [nop,nop,TS val 784270464 ecr 4294913219], length 11
+
+
+mqq@dev-0-0:/home/kevintian/quote/test/sc$ ./server 
+Listen fd :3
+
+20191115165833==========================================::1
+|||E:1|3
+0
+0
+0
+set success
+new sock:5
+20191115165833==========================================::1
+|||E:2|5
+20191115165833 recv size:9
+
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXX
+write:11
+
+
+20191115170223==========================================::0
+
+
+
+20191115170543==========================================::0
+20191115170903==========================================::0
+20191115171223==========================================::0
+20191115171430==========================================::1
+|||E:2|5
+20191115171430 recv error::110
+20191115171820==========================================::0
+20191115172140==========================================::0
+
+
+
